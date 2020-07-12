@@ -123,15 +123,15 @@ Function Send-PSSendGridMail {
         Invoke-RestMethod @Parameters
     }
 
-    $Parameters = @{
-        FromAddress     = "meuk@neehenk.nl"
-        ToAddress       = "example@example.nl"
-        Subject         = "SendGrid test"
-        Body            = "Dit is een mail"
-        Token           = ""
-        FromName        = "Henk"
-        ToName          = "Barbara"
-        AttachementPath = "C:\Scripts\GIT\Github\PSSendGrid\capture.txt"
-        AttachementDisposition = "attachment"
-    }
-    Send-PSSendGridMail @Parameters
+    # $Parameters = @{
+    #     FromAddress     = "meuk@neehenk.nl"
+    #     ToAddress       = "example@example.nl"
+    #     Subject         = "SendGrid test"
+    #     Body            = "Dit is een mail"
+    #     Token           = ""
+    #     FromName        = "Henk"
+    #     ToName          = "Barbara"
+    #     AttachementPath = "C:\Scripts\GIT\Github\PSSendGrid\capture.txt"
+    #     AttachementDisposition = "attachment"
+    # }
+    # Send-PSSendGridMail @Parameters
