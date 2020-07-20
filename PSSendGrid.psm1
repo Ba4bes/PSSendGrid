@@ -40,7 +40,12 @@ Function Send-PSSendGridMail {
     # $EncodedAttachement = [System.Convert]::ToBase64String($Bytes).
     # [convert]::ToBase64String((get-content $path -encoding byte))
     if ($AttachementPath) {
-        $AttachementContent = Get-Content -Path $AttachementPath -AsByteStream
+        try{
+        $AttachementContent = Get-Content -Path $AttachementPath -AsByteStream -ErrorAction Stop
+        }
+        Catch {
+            Throw "Could not find Path $AttachementPath"
+        }
         if ([string]::IsNullOrEmpty($AttachementContent)) {
                 Throw "File content is empty, attachement can not be saved"
             }
@@ -120,18 +125,19 @@ Function Send-PSSendGridMail {
             ContentType = "application/json"
             Body        = $BodyJson
         }
-        Invoke-RestMethod @Parameters
+        $Result = Invoke-RestMethod @Parameters
+        $Result
     }
 
-    # $Parameters = @{
-    #     FromAddress     = "meuk@neehenk.nl"
-    #     ToAddress       = "example@example.nl"
-    #     Subject         = "SendGrid test"
-    #     Body            = "Dit is een mail"
-    #     Token           = ""
-    #     FromName        = "Henk"
-    #     ToName          = "Barbara"
-    #     AttachementPath = "C:\Scripts\GIT\Github\PSSendGrid\capture.txt"
-    #     AttachementDisposition = "attachment"
-    # }
-    # Send-PSSendGridMail @Parameters
+    $Parameters = @{
+        FromAddress     = "nl"
+        ToAddress       = ""
+        Subject         = "SendGrid test"
+        Body            = "Dit is een mail"
+        Token           = ""
+        FromName        = "Henk"
+        ToName          = "Barbara"
+        AttachementPath = "C:\Scripts\GIT\Github\PSSendGrid\tests\capt55ure.txt"
+        AttachementDisposition = "attachment"
+    }
+    Send-PSSendGridMail @Parameters

@@ -1,9 +1,13 @@
 # Copied from https://powershellexplained.com/2017-01-21-powershell-module-continious-delivery-pipeline/
-BeforeAll{
-$projectRoot = Resolve-Path "$PSScriptRoot\.."
-$moduleRoot = Split-Path (Resolve-Path "$projectRoot\*.psm1")
-$moduleName = Split-Path $moduleRoot -Leaf
-Import-Module (Join-Path $moduleRoot "$moduleName.psd1") -force
+BeforeAll {
+    $projectRoot = Resolve-Path "$PSScriptRoot\.."
+    $moduleRoot = Split-Path (Resolve-Path "$projectRoot\*.psm1")
+    $moduleName = Split-Path $moduleRoot -Leaf
+    Import-Module (Join-Path $moduleRoot "$moduleName.psd1") -force
+
+    Mock Invoke-RestMethod {
+        Return $Parameters
+    }
 }
 
 Describe "General project validation: $moduleName" {
@@ -40,5 +44,27 @@ Describe "General project validation: $moduleName" {
 
     It "Module '$moduleName' can import cleanly" {
         { Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force } | Should -Not -Throw
+    }
+}
+
+
+Describe "UnitTests" {
+    Mock Invoke-RestMethod {
+        Return $Parameters
+    }
+    Context "Handling the Body" {
+        It "Should throw if path does not exist" {
+            $testParameters = @{
+                FromAddress            = "meuk@neehenk.nl"
+                ToAddress              = "example@example.nl"
+                Subject                = "SendGrid test"
+                Body                   = "Dit is een mail"
+                Token                  = ""
+                FromName               = "Henk"
+                ToName                 = "Barbara"
+            }
+            $Result = Send-PSSendGridMail @testParameters
+            $Result.Body | should -be "bla"
+        }
     }
 }
