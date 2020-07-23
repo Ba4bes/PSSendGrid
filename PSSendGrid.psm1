@@ -30,7 +30,7 @@ Function Send-PSSendGridMail {
     .EXAMPLE
     $Parameters = @{
         FromAddress     = "example@example.com"
-        ToAddress       = "Example2@Example.com"
+        ToAddress       = "example2@example.com"
         Subject         = "SendGrid example"
         Body            = "This is a plain text email"
         Token           = "adfdasfaihghaweoigneawfaewfawefadfdsfsd4tg45h54hfawfawfawef"
@@ -38,20 +38,27 @@ Function Send-PSSendGridMail {
         ToName          = "John Doe"
     }
     Send-PSSendGridMail @Parameters
+
+    =======
+    Sends an email from example@example.com to example2@example.com
+
     .EXAMPLE
     $Parameters = @{
         Token      = "API TOKEN"
         ToAddress  = "example@example.com"
         BodyAsHTML = "<h1>MetHTML</h1><img src='cid:exampleID'>"
-        ToName                   =      "Exampl2"
+        ToName                   =      "Example2"
         FromName                 =      "Example1"
-        FromAddress              =      "Example2@example.com"
+        FromAddress              =      "example2@example.com"
         AttachementID            =      "exampleID"
         AttachementPath          =      "C:\temp\exampleimage.jpg"
         AttachementDisposition   =      "inline"
         Subject                  =      "Test"
     }
     Send-PSSendGridMail @Parameters
+
+    =======
+    Sends an email with an inline attachement in the HTML
     .LINK
     https://github.com/Ba4bes/PSSendGrid
     .NOTES
@@ -62,8 +69,8 @@ Function Send-PSSendGridMail {
     https://4bes.nl
 
     #>
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
     param (
-        [cmdletbinding()]
         [parameter(Mandatory = $True)]
         [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
         [string]$ToAddress,
@@ -107,10 +114,10 @@ Function Send-PSSendGridMail {
             if ($PSVersionTable.PSVersion.Major -lt 6) {
                 $EncodedAttachement = [convert]::ToBase64String((get-content $Attachementpath -encoding byte))
             }
-            else{
-            $AttachementContent = Get-Content -Path $AttachementPath -AsByteStream -ErrorAction Stop
+            else {
+                $AttachementContent = Get-Content -Path $AttachementPath -AsByteStream -ErrorAction Stop
 
-            $EncodedAttachement = [convert]::ToBase64String($AttachementContent)
+                $EncodedAttachement = [convert]::ToBase64String($AttachementContent)
             }
         }
         Catch {
@@ -190,5 +197,10 @@ Function Send-PSSendGridMail {
         ContentType = "application/json"
         Body        = $BodyJson
     }
-    Invoke-RestMethod @Parameters
+    if ($PSCmdlet.ShouldProcess(
+            ("An email will be send from {0} to {1} with subject: {2}" -f $SendGridBody.from.email, $SendGridBody.personalizations.to.email, $SendGridBody.personalizations.subject),
+            ("Do you want to send an email from {0} to {1} with subject: {2}?" -f $SendGridBody.from.email, $SendGridBody.personalizations.to.email, $SendGridBody.personalizations.subject),
+            "Send email")) {
+        Invoke-RestMethod @Parameters
+    }
 }
