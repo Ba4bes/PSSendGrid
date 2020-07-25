@@ -29,17 +29,3 @@ foreach ($parameter in $parameteroptions) {
     }
     Send-PSSendGridMail @MailParameters
 }
-
-$parameter
-
-
-$Parameters = @{
-    FromAddress     = "example@neehenk.nl"
-    ToAddress       = "barbara@barbaraforbes.nl"
-    Subject         = "SendGrid Plain Example"
-    Body            = "This is a plain text email"
-    Token           = "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"
-    FromName        = "Barbara"
-    ToName          = "Barbara"
-}
-Send-PSSendGridMail @Parameters
