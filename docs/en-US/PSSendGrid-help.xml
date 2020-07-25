@@ -10,7 +10,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This function is a wrapper around the SendGrid API. It is possible to send attachements as well.</maml:para>
+      <maml:para>This function is a wrapper around the SendGrid API. It is possible to send attachments as well.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -28,9 +28,9 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="10" aliases="none">
-          <maml:name>AttachementDisposition</maml:name>
+          <maml:name>AttachmentDisposition</maml:name>
           <maml:Description>
-            <maml:para>Attachement or Inline. Use inline to add image to HTML body</maml:para>
+            <maml:para>Attachment or Inline. Use inline to add image to HTML body</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -40,9 +40,9 @@
           <dev:defaultValue>Attachment</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="none">
-          <maml:name>AttachementID</maml:name>
+          <maml:name>AttachmentID</maml:name>
           <maml:Description>
-            <maml:para>AttachementID for inline attachement, to refer to from the HTML</maml:para>
+            <maml:para>AttachmentID for inline attachment, to refer to from the HTML</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -136,7 +136,7 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="none">
-          <maml:name>AttachementPath</maml:name>
+          <maml:name>AttachmentPath</maml:name>
           <maml:Description>
             <maml:para>Path to file that needs to be attached</maml:para>
           </maml:Description>
@@ -269,7 +269,7 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="none">
-        <maml:name>AttachementPath</maml:name>
+        <maml:name>AttachmentPath</maml:name>
         <maml:Description>
           <maml:para>Path to file that needs to be attached</maml:para>
         </maml:Description>
@@ -281,9 +281,9 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="10" aliases="none">
-        <maml:name>AttachementDisposition</maml:name>
+        <maml:name>AttachmentDisposition</maml:name>
         <maml:Description>
-          <maml:para>Attachement or Inline. Use inline to add image to HTML body</maml:para>
+          <maml:para>Attachment or Inline. Use inline to add image to HTML body</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -293,9 +293,9 @@
         <dev:defaultValue>Attachment</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="none">
-        <maml:name>AttachementID</maml:name>
+        <maml:name>AttachmentID</maml:name>
         <maml:Description>
-          <maml:para>AttachementID for inline attachement, to refer to from the HTML</maml:para>
+          <maml:para>AttachmentID for inline attachment, to refer to from the HTML</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -362,9 +362,9 @@ Send-PSSendGridMail @Parameters</dev:code>
     ToName                   =      "Exampl2"
     FromName                 =      "Example1"
     FromAddress              =      "Example2@example.com"
-    AttachementID            =      "exampleID"
-    AttachementPath          =      "C:\temp\exampleimage.jpg"
-    AttachementDisposition   =      "inline"
+    AttachmentID            =      "exampleID"
+    AttachmentPath          =      "C:\temp\exampleimage.jpg"
+    AttachmentDisposition   =      "inline"
     Subject                  =      "Test"
 }
 Send-PSSendGridMail @Parameters</dev:code>

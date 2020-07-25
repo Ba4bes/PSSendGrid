@@ -15,13 +15,13 @@ Send an email through the SendGrid API
 ```
 Send-PSSendGridMail [-ToAddress] <String> [-ToName] <String> [-FromAddress] <String> [-FromName] <String>
  [-Subject] <String> [[-Body] <String>] [[-BodyAsHTML] <String>] [-Token] <String>
- [[-AttachementPath] <String>] [[-AttachementDisposition] <String>] [[-AttachementID] <String>] [-WhatIf]
+ [[-AttachmentPath] <String>] [[-AttachmentDisposition] <String>] [[-AttachmentID] <String>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 This function is a wrapper around the SendGrid API.
-It is possible to send attachements as well.
+It is possible to send attachments as well.
 
 ## EXAMPLES
 
@@ -48,9 +48,9 @@ $Parameters = @{
     ToName                   =      "Exampl2"
     FromName                 =      "Example1"
     FromAddress              =      "Example2@example.com"
-    AttachementID            =      "exampleID"
-    AttachementPath          =      "C:\temp\exampleimage.jpg"
-    AttachementDisposition   =      "inline"
+    AttachmentID            =      "exampleID"
+    AttachmentPath          =      "C:\temp\exampleimage.jpg"
+    AttachmentDisposition   =      "inline"
     Subject                  =      "Test"
 }
 Send-PSSendGridMail @Parameters
@@ -178,7 +178,7 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -AttachementPath
+### -AttachmentPath
 Path to file that needs to be attached
 
 ```yaml
@@ -193,8 +193,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -AttachementDisposition
-Attachement or Inline.
+### -AttachmentDisposition
+attachment or Inline.
 Use inline to add image to HTML body
 
 ```yaml
@@ -209,8 +209,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -AttachementID
-AttachementID for inline attachement, to refer to from the HTML
+### -AttachmentID
+AttachmentID for inline attachment, to refer to from the HTML
 
 ```yaml
 Type: String

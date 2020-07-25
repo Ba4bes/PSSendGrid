@@ -4,7 +4,7 @@ Function Send-PSSendGridMail {
     Send an email through the SendGrid API
     .DESCRIPTION
     This function is a wrapper around the SendGrid API.
-    It is possible to send attachements as well.
+    It is possible to send attachments as well.
     .PARAMETER ToAddress
     Emailaddress of the receiving end
     .PARAMETER ToName
@@ -21,12 +21,12 @@ Function Send-PSSendGridMail {
     Body of the email when using HTML
     .PARAMETER Token
     SendGrid token for the API
-    .PARAMETER AttachementPath
+    .PARAMETER AttachmentPath
     Path to file that needs to be attached
-    .PARAMETER AttachementDisposition
-    Attachement or Inline. Use inline to add image to HTML body
-    .PARAMETER AttachementID
-    AttachementID for inline attachement, to refer to from the HTML
+    .PARAMETER AttachmentDisposition
+    Attachment or Inline. Use inline to add image to HTML body
+    .PARAMETER AttachmentID
+    AttachmentID for inline attachment, to refer to from the HTML
     .EXAMPLE
     $Parameters = @{
         FromAddress     = "example@example.com"
@@ -50,15 +50,15 @@ Function Send-PSSendGridMail {
         ToName                   =      "Example2"
         FromName                 =      "Example1"
         FromAddress              =      "example2@example.com"
-        AttachementID            =      "exampleID"
-        AttachementPath          =      "C:\temp\exampleimage.jpg"
-        AttachementDisposition   =      "inline"
+        AttachmentID            =      "exampleID"
+        AttachmentPath          =      "C:\temp\exampleimage.jpg"
+        AttachmentDisposition   =      "inline"
         Subject                  =      "Test"
     }
     Send-PSSendGridMail @Parameters
 
     =======
-    Sends an email with an inline attachement in the HTML
+    Sends an email with an inline attachment in the HTML
     .LINK
     https://github.com/Ba4bes/PSSendGrid
     .NOTES
@@ -91,12 +91,12 @@ Function Send-PSSendGridMail {
         [string]$Token,
         [parameter()]
         [ValidateScript( { Test-Path $_ })]
-        [string]$AttachementPath,
+        [string]$AttachmentPath,
         [parameter()]
         [ValidateSet('attachment', 'inline')]
-        [string]$AttachementDisposition = "attachment",
+        [string]$AttachmentDisposition = "attachment",
         [parameter()]
-        [string]$AttachementID
+        [string]$AttachmentID
 
     )
     # Set body as HTML or as text
@@ -109,38 +109,38 @@ Function Send-PSSendGridMail {
         $MailBodyValue = $Body
     }
     # Check for attachtements. If they are present, convert to Base64
-    if ($AttachementPath) {
+    if ($AttachmentPath) {
         try {
             if ($PSVersionTable.PSVersion.Major -lt 6) {
-                $EncodedAttachement = [convert]::ToBase64String((get-content $Attachementpath -encoding byte))
+                $EncodedAttachment = [convert]::ToBase64String((get-content $Attachmentpath -encoding byte))
             }
             else {
-                $AttachementContent = Get-Content -Path $AttachementPath -AsByteStream -ErrorAction Stop
+                $AttachmentContent = Get-Content -Path $AttachmentPath -AsByteStream -ErrorAction Stop
 
-                $EncodedAttachement = [convert]::ToBase64String($AttachementContent)
+                $EncodedAttachment = [convert]::ToBase64String($AttachmentContent)
             }
         }
         Catch {
 
-            Throw "Could not convert file $AttachementPath"
+            Throw "Could not convert file $AttachmentPath"
         }
 
-        # Get the extension for the attachement type
-        $AttachementExtension = $AttachementPath.Split('.')[-1]
+        # Get the extension for the attachment type
+        $AttachmentExtension = $AttachmentPath.Split('.')[-1]
         Switch ($IsWindows) {
-            $true { $AttachementName = $AttachementPath.Split('\')[-1] }
-            $false { $AttachementName = $AttachementPath.Split('/')[-1] }
-            $Null { $AttachementName = $AttachementPath.Split('\')[-1] }
+            $true { $AttachmentName = $AttachmentPath.Split('\')[-1] }
+            $false { $AttachmentName = $AttachmentPath.Split('/')[-1] }
+            $Null { $AttachmentName = $AttachmentPath.Split('\')[-1] }
             default {
-                Throw "Could not work with Attachementpath"
+                Throw "Could not work with attachmentpath"
             }
         }
         $ImageExtensions = @("jpg", "png", "gif")
-        if ($ImageExtensions -contains $AttachementExtension) {
-            $Type = "image/$AttachementExtension"
+        if ($ImageExtensions -contains $AttachmentExtension) {
+            $Type = "image/$AttachmentExtension"
         }
         else {
-            $Type = "Application/$AttachementExtension"
+            $Type = "Application/$AttachmentExtension"
         }
     }
 
@@ -168,20 +168,20 @@ Function Send-PSSendGridMail {
             "name"  = $FromName
         }
     }
-    # Add attachements to body if they are present
-    if ($AttachementPath) {
-        $attachments = @(
+    # Add attachments to body if they are present
+    if ($AttachmentPath) {
+        $Attachments = @(
             @{
-                content     = $EncodedAttachement
-                filename    = $AttachementName
+                content     = $EncodedAttachment
+                filename    = $AttachmentName
                 type        = $Type
-                disposition = $AttachementDisposition
+                disposition = $AttachmentDisposition
             }
         )
-        if ($AttachementID) {
-            $attachments[0].add("content_id", $AttachementID)
+        if ($AttachmentID) {
+            $Attachments[0].add("content_id", $AttachmentID)
         }
-        $SendGridBody | Add-Member -MemberType NoteProperty -Name "attachments" -Value $attachments
+        $SendGridBody | Add-Member -MemberType NoteProperty -Name "Attachments" -Value $Attachments
     }
     $BodyJson = $SendGridBody | ConvertTo-Json -Depth 4
 

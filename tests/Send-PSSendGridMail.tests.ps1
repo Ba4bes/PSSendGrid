@@ -22,19 +22,18 @@ Describe "General project validation: $moduleName" {
     }
 
     It "Script <file> should exist" -TestCases $testCase {
-        param($file)
+
 
         $file.fullname | Should -Exist
     }
 
     It "Script <file> can be read without errors" -TestCases $testCase {
-        param($file)
+
 
         { $null = Get-Content -Path $file.fullname -ErrorAction Stop } | Should -Not -Throw
     }
 
     It "Script <file> should be valid powershell" -TestCases $testCase {
-        param($file)
 
         $contents = Get-Content -Path $file.fullname -ErrorAction SilentlyContinue
         $errors = $null
@@ -44,27 +43,5 @@ Describe "General project validation: $moduleName" {
 
     It "Module '$moduleName' can import cleanly" {
         { Import-Module (Join-Path $moduleRoot "$moduleName.psm1") -force } | Should -Not -Throw
-    }
-}
-
-
-Describe "UnitTests" {
-    Mock Invoke-RestMethod {
-        Return $Parameters
-    }
-    Context "Handling the Body" {
-        It "Should throw if path does not exist" {
-            $testParameters = @{
-                FromAddress            = "meuk@neehenk.nl"
-                ToAddress              = "example@example.nl"
-                Subject                = "SendGrid test"
-                Body                   = "Dit is een mail"
-                Token                  = ""
-                FromName               = "Henk"
-                ToName                 = "Barbara"
-            }
-            $Result = Send-PSSendGridMail @testParameters
-            $Result.Body | should -be "bla"
-        }
     }
 }
