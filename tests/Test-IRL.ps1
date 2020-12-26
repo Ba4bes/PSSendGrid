@@ -19,13 +19,15 @@ foreach ($parameter in $parameteroptions) {
         $MailParameters.add("BodyAsHTML", $Parameter.BodyHTML)
     }
     if (-not[string]::IsNullOrEmpty($Parameter.AttachmentPath)) {
-        $MailParameters.add("AttachmentPath", $Parameter.AttachmentPath)
+        [string[]]$AttachmentPaths = ($parameter.AttachmentPath).split(',')
+        $MailParameters.add("AttachmentPath", $AttachmentPaths)
     }
     if (-not[string]::IsNullOrEmpty($Parameter.AttachmentDisposition)) {
         $MailParameters.add("AttachmentDisposition", $Parameter.AttachmentDisposition)
     }
     if (-not[string]::IsNullOrEmpty($Parameter.AttachmentID)) {
-        $MailParameters.add("AttachmentID", $Parameter.AttachmentID)
+        [string[]]$AttachmentID = ($parameter.AttachmentID).split(',')
+        $MailParameters.add("AttachmentID", $AttachmentID)
     }
-    Send-PSSendGridMail @MailParameters
+    Send-PSSendGridMail @MailParameters -Verbose
 }

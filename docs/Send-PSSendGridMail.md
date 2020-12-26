@@ -15,7 +15,7 @@ Send an email through the SendGrid API
 ```
 Send-PSSendGridMail [-ToAddress] <String> [-ToName] <String> [-FromAddress] <String> [-FromName] <String>
  [-Subject] <String> [[-Body] <String>] [[-BodyAsHTML] <String>] [-Token] <String>
- [[-AttachmentPath] <String>] [[-AttachmentDisposition] <String>] [[-AttachmentID] <String>] [-WhatIf]
+ [[-AttachmentPath] <String[]>] [[-AttachmentDisposition] <String>] [[-AttachmentID] <String[]>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -182,7 +182,7 @@ Accept wildcard characters: False
 Path to file that needs to be attached
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
@@ -213,7 +213,7 @@ Accept wildcard characters: False
 AttachmentID for inline attachment, to refer to from the HTML
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
