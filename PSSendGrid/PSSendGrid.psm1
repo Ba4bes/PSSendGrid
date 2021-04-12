@@ -1,3 +1,15 @@
+Function Remove-Diacritics {
+    # remove al special characters
+    [CmdletBinding()]
+    param(
+        [parameter(Position = 1)]
+        [string]$Value
+    )
+    $Value = $Value.Replace("ẞ", "ss")
+    [Text.Encoding]::ASCII.GetString([Text.Encoding]::GetEncoding("Cyrillic").GetBytes($Value))
+}
+
+
 Function Send-PSSendGridMail {
     <#
     .SYNOPSIS
@@ -77,12 +89,12 @@ Function Send-PSSendGridMail {
         [parameter(Mandatory = $True)]
         [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
         [string]$ToAddress,
-        [parameter(Mandatory = $True)]
+        [parameter(Mandatory = $False)]
         [string]$ToName,
         [parameter(Mandatory = $True)]
         [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
         [string]$FromAddress,
-        [parameter(Mandatory = $True)]
+        [parameter(Mandatory = $False)]
         [string]$FromName,
         [parameter(Mandatory = $True)]
         [string]$Subject,
@@ -106,12 +118,12 @@ Function Send-PSSendGridMail {
     # Set body as HTML or as text
     if (-not[string]::IsNullOrEmpty($BodyAsHTML)) {
         $MailbodyType = 'text/HTML'
-        $MailbodyValue = $BodyAsHTML
+        $MailbodyValue = (Remove-Diacritics $BodyAsHTML)
         Write-Verbose "Found BodyAsHTML parameter, Type is set to text/HTML"
     }
     else {
         $MailbodyType = 'text/plain'
-        $MailBodyValue = $Body
+        $MailBodyValue = (Remove-Diacritics $Body)
         Write-Verbose "Found no BodyAsHTML parameter, Type is set to text/plain"
     }
     # Check for attachments. If they are present, convert to Base64
@@ -172,11 +184,11 @@ Function Send-PSSendGridMail {
             @{
                 "to"      = @(
                     @{
-                        "email" = $ToAddress
-                        "name"  = $ToName
+                        "email" = (Remove-Diacritics $ToAddress)
+                        # "name"  = (Remove-Diacritics $ToName)
                     }
                 )
-                "subject" = $Subject
+                "subject" = (Remove-Diacritics $Subject)
             }
         )
         "content"          = @(
@@ -186,9 +198,15 @@ Function Send-PSSendGridMail {
             }
         )
         "from"             = @{
-            "email" = $FromAddress
-            "name"  = $FromName
+            "email" = (Remove-Diacritics $FromAddress)
+            # "name"  = (Remove-Diacritics $FromName)
         }
+    }
+    if ($ToName) {
+        ($SendGridBody.personalizations.to).add("name", (Remove-Diacritics $ToName))
+    }
+    if ($FromName) {
+        ($SendGridBody.from).Add("name", (Remove-Diacritics $FromName))
     }
     $Verbose = @"
     ToEmail: $($SendGridBody.personalizations.To.email)

@@ -13,7 +13,7 @@ Send an email through the SendGrid API
 ## SYNTAX
 
 ```
-Send-PSSendGridMail [-ToAddress] <String> [-ToName] <String> [-FromAddress] <String> [-FromName] <String>
+Send-PSSendGridMail [-ToAddress] <String> [[-ToName] <String>] [-FromAddress] <String> [[-FromName] <String>]
  [-Subject] <String> [[-Body] <String>] [[-BodyAsHTML] <String>] [-Token] <String>
  [[-AttachmentPath] <String[]>] [[-AttachmentDisposition] <String>] [[-AttachmentID] <String[]>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
@@ -81,7 +81,7 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 2
 Default value: None
 Accept pipeline input: False
@@ -111,7 +111,7 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 4
 Default value: None
 Accept pipeline input: False
