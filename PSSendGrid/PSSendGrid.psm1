@@ -1,8 +1,8 @@
-    Function Remove-Diacritics {
+Function Remove-Diacritics {
     # remove al special characters
     [CmdletBinding()]
     param(
-        [parameter(Position=1)]
+        [parameter(Position = 1)]
         [string]$Value
     )
     $Value = $Value.Replace("ẞ", "ss")
@@ -89,12 +89,12 @@ Function Send-PSSendGridMail {
         [parameter(Mandatory = $True)]
         [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
         [string]$ToAddress,
-        [parameter(Mandatory = $True)]
+        [parameter(Mandatory = $False)]
         [string]$ToName,
         [parameter(Mandatory = $True)]
         [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
         [string]$FromAddress,
-        [parameter(Mandatory = $True)]
+        [parameter(Mandatory = $False)]
         [string]$FromName,
         [parameter(Mandatory = $True)]
         [string]$Subject,
@@ -185,7 +185,7 @@ Function Send-PSSendGridMail {
                 "to"      = @(
                     @{
                         "email" = (Remove-Diacritics $ToAddress)
-                        "name"  = (Remove-Diacritics $ToName)
+                        # "name"  = (Remove-Diacritics $ToName)
                     }
                 )
                 "subject" = (Remove-Diacritics $Subject)
@@ -199,8 +199,14 @@ Function Send-PSSendGridMail {
         )
         "from"             = @{
             "email" = (Remove-Diacritics $FromAddress)
-            "name"  = (Remove-Diacritics $FromName)
+            # "name"  = (Remove-Diacritics $FromName)
         }
+    }
+    if ($ToName) {
+        ($SendGridBody.personalizations.to).add("name", (Remove-Diacritics $ToName))
+    }
+    if ($FromName) {
+        ($SendGridBody.from).Add("name", (Remove-Diacritics $FromName))
     }
     $Verbose = @"
     ToEmail: $($SendGridBody.personalizations.To.email)
