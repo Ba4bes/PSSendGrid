@@ -6,9 +6,52 @@ Function Remove-Diacritics {
         [string]$Value
     )
     $Value = $Value.Replace("ẞ", "ss")
-    [Text.Encoding]::ASCII.GetString([Text.Encoding]::GetEncoding("Cyrillic").GetBytes($Value))
+    $TextWithoutDiacritics = [Text.Encoding]::ASCII.GetString([Text.Encoding]::GetEncoding("Cyrillic").GetBytes($Value))
+    if ($Value -ne $TextWithoutDiacritics) {
+        Write-Verbose "Replaced $Value with $TextWithoutDiacritics"
+    }
+    $TextWithoutDiacritics
 }
 
+function New-AddressArray {
+    # Create an array with all the address data
+    [outputtype([array])]
+    [CmdletBinding()]
+    param(
+        [parameter(Position = 0)]
+        [string[]]$Addresses,
+        [parameter(Position = 1)]
+        [string[]]$Names
+    )
+
+    $EmailAddressRegex = '^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$'
+    $AllAddresses = @()
+    $i = 0
+    if ( $Addresses.Count -eq 0) {
+        Write-Verbose "No addresses found, moving on"
+    }
+    else {
+        Write-Verbose "Found $($Addresses.Count) addresses"
+        foreach ($AddressValue in $Addresses) {
+            Write-Verbose "Processing Address $($i) Value: $($AddressValue)"
+            if ($AddressValue -notmatch $EmailAddressRegex) {
+                Throw "Invalid email address: $AddressValue"
+            }
+            else {
+                $AddressObject = [pscustomObject]@{
+                    "email" = (Remove-Diacritics $AddressValue)
+                }
+                if ($Names.Count -gt $i) {
+                    $AddressObject | Add-Member -MemberType NoteProperty -Name "Name" -Value (Remove-Diacritics $Names[$i])
+                }
+                Write-Verbose "Added Name $($AddressObject.Name) to AddressObject"
+                $AllAddresses += $AddressObject
+            }
+            $i++
+        }
+        $AllAddresses
+    }
+}
 
 Function Send-PSSendGridMail {
     <#
@@ -18,13 +61,24 @@ Function Send-PSSendGridMail {
     This function is a wrapper around the SendGrid API.
     It is possible to send attachments as well.
     .PARAMETER ToAddress
-    Emailaddress of the receiving end
+    Emailaddress of the receiving end, multiple addresses can be entered in an array
     .PARAMETER ToName
-    Name of the receiving end
+    Name of the receiving end, multiple names can be entered in an array.
+    When using multiple addresses, the ToName array must be in the same order as the ToAddress array.
     .PARAMETER FromAddress
     Source email address
     .PARAMETER FromName
     Source name
+    .PARAMETER CcAddress
+    Emailaddress of the CC recipient, multiple addresses can be entered in an array.
+    .PARAMETER CcName
+    Name of the CC recipient, multiple names can be entered in an array.
+    When using multiple addresses, the CcName array must be in the same order as the CcAddress array.
+    .PARAMETER BccAddress
+    Emailaddress of the BCC recipient, multiple addresses can be entered in an array.
+    .PARAMETER BccName
+    Name of the BCC recipient, multiple names can be entered in an array.
+    When using multiple addresses, the BccName array must be in the same order as the BccAddress array.
     .PARAMETER Subject
     Subject of the email
     .PARAMETER Body
@@ -74,8 +128,25 @@ Function Send-PSSendGridMail {
 
     =======
     Sends an email with an inline attachment in the HTML
+    .EXAMPLE
+    $Parameters = @{
+        FromAddress     = "example@example.com"
+        ToAddress       = @("example2@example.com", "example3@example.com")
+        cCAddress       = "Example4@example.com"
+        Subject         = "SendGrid example"
+        Body            = "This is a plain text email"
+        Token           = "adfdasfaihghaweoigneawfaewfawefadfdsfsd4tg45h54hfawfawfawef"
+        FromName        = "Jane Doe"
+        ToName          = @("John Doe", "Bert Doe")
+    }
+    Send-PSSendGridMail @Parameters
+
+    =======
+    Sends an email from example@example.com to example2@example.com and example3@example.com, with CC to Example4@example.com
     .LINK
     https://github.com/Ba4bes/PSSendGrid
+    .LINK
+    https://4bes.nl/2020/07/26/pssendgrid-send-email-from-powershell-with-sendgrid/
     .NOTES
     Created by Barbara Forbes
     Script has been tested for Windows PowerShell and PowerShell 7.
@@ -87,15 +158,21 @@ Function Send-PSSendGridMail {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
     param (
         [parameter(Mandatory = $True)]
-        [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
-        [string]$ToAddress,
+        [string[]]$ToAddress,
         [parameter(Mandatory = $False)]
-        [string]$ToName,
+        [string[]]$ToName,
         [parameter(Mandatory = $True)]
-        [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
         [string]$FromAddress,
         [parameter(Mandatory = $False)]
         [string]$FromName,
+        [parameter(Mandatory = $False)]
+        [string[]]$CCAddress,
+        [parameter(Mandatory = $False)]
+        [string[]]$CCName,
+        [parameter(Mandatory = $False)]
+        [string[]]$BCCAddress,
+        [parameter(Mandatory = $False)]
+        [string[]]$BCCName,
         [parameter(Mandatory = $True)]
         [string]$Subject,
         [parameter()]
@@ -177,19 +254,32 @@ Function Send-PSSendGridMail {
         }
         Write-Verbose "$($AllAttachments.Count) attachments have been processed"
     }
+    # Create to, cc, bcc objects if needed
+    Write-Verbose "Adding toAddress array if needed"
+    $ToAddresses = New-AddressArray -Addresses $ToAddress -Names $ToName
+    Write-Verbose "Adding ccAddress array if needed"
+    $CCAddresses = New-AddressArray -Addresses $CCAddress -Names $CCName
+    Write-Verbose "Adding bccAddress array if needed"
+    $BCCAddresses = New-AddressArray -Addresses $BCCAddress -Names $BCCName
 
     # Create a body to send to the API
+
+    $Personalization = @{
+        'subject' = (Remove-Diacritics $Subject)
+    }
+    Write-Verbose "adding subject: $($Personalization.subject)"
+    if ($ToAddresses) {
+        $Personalization.Add('to', @($ToAddresses))
+    }
+    if ($CCAddresses) {
+        $Personalization.Add("cc", @($CCAddresses))
+    }
+    if ($BCCAddresses) {
+        $Personalization.Add("bcc" , @($BCCAddresses))
+    }
     $SendGridBody = [pscustomObject]@{
         "personalizations" = @(
-            @{
-                "to"      = @(
-                    @{
-                        "email" = (Remove-Diacritics $ToAddress)
-                        # "name"  = (Remove-Diacritics $ToName)
-                    }
-                )
-                "subject" = (Remove-Diacritics $Subject)
-            }
+            $Personalization
         )
         "content"          = @(
             @{
@@ -199,26 +289,10 @@ Function Send-PSSendGridMail {
         )
         "from"             = @{
             "email" = (Remove-Diacritics $FromAddress)
-            # "name"  = (Remove-Diacritics $FromName)
+            "name"  = (Remove-Diacritics $FromName)
         }
     }
-    if ($ToName) {
-        ($SendGridBody.personalizations.to).add("name", (Remove-Diacritics $ToName))
-    }
-    if ($FromName) {
-        ($SendGridBody.from).Add("name", (Remove-Diacritics $FromName))
-    }
-    $Verbose = @"
-    ToEmail: $($SendGridBody.personalizations.To.email)
-    ToName: $($SendGridBody.personalizations.To.name)
-    FromEmail: $($SendGridBody.from.email)
-    FromName: $($SendGridBody.from.name)
-    Subject: $($SendGridBody.personalizations.subject)
-    ContentBody: $($SendGridBody.content.value)
-    ContentType: $( $SendGridBody.content.type)
-"@
-    Write-Verbose "Body send to API:"
-    Write-Verbose $Verbose
+
     # Add attachments to body if they are present
     if ($AttachmentPath) {
         $Attachments = @()

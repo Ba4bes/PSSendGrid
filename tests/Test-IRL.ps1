@@ -6,7 +6,7 @@ foreach ($parameter in $parameteroptions) {
 
     $MailParameters = @{
         FromAddress = $Parameter.FromAddress
-        ToAddress   = $Parameter.ToAddress
+        ToAddress   = ($Parameter.ToAddress -split ',')
         Subject     = $parameter.Subject
         Token       = "TOKENHERE"
         FromName    = $parameter.FromName
@@ -28,6 +28,18 @@ foreach ($parameter in $parameteroptions) {
     if (-not[string]::IsNullOrEmpty($Parameter.AttachmentID)) {
         [string[]]$AttachmentID = ($parameter.AttachmentID).split(',')
         $MailParameters.add("AttachmentID", $AttachmentID)
+    }
+    if (-not[string]::IsNullOrEmpty($Parameter.ccAddress)) {
+        $MailParameters.add("ccAddress", ($Parameter.ccAddress).split(','))
+    }
+    if (-not[string]::IsNullOrEmpty($Parameter.ccName)) {
+        $MailParameters.add("ccName", ($Parameter.ccName).split(','))
+    }
+    if (-not[string]::IsNullOrEmpty($Parameter.bccAddress)) {
+        $MailParameters.add("bccAddress", ($Parameter.bccAddress).split(','))
+    }
+    if (-not[string]::IsNullOrEmpty($Parameter.bccName)) {
+        $MailParameters.add("bccName", ($Parameter.bccName).split(','))
     }
     Send-PSSendGridMail @MailParameters -Verbose
 }
