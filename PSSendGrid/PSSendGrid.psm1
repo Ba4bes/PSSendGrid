@@ -37,7 +37,6 @@ function New-AddressArray {
 
             try {
                 $null = [mailaddress]$AddressValue
-                $null = Resolve-DnsName -Name ($AddressValue -as [mailaddress]).Host -Type 'MX' -ErrorAction Stop
             }
             catch {
                 Throw "Invalid email address: $AddressValue"
