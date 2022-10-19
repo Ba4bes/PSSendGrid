@@ -24,7 +24,6 @@ function New-AddressArray {
         [string[]]$Names
     )
 
-    $EmailAddressRegex = '^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$'
     $AllAddresses = @()
     $i = 0
     if ( $Addresses.Count -eq 0) {
@@ -34,19 +33,24 @@ function New-AddressArray {
         Write-Verbose "Found $($Addresses.Count) addresses"
         foreach ($AddressValue in $Addresses) {
             Write-Verbose "Processing Address $($i) Value: $($AddressValue)"
-            if ($AddressValue -notmatch $EmailAddressRegex) {
+
+
+            try {
+                $null = [mailaddress]$AddressValue
+                $null = Resolve-DnsName -Name ($AddressValue -as [mailaddress]).Host -Type 'MX' -ErrorAction Stop
+            }
+            catch {
                 Throw "Invalid email address: $AddressValue"
             }
-            else {
-                $AddressObject = [pscustomObject]@{
-                    "email" = (Remove-Diacritics $AddressValue)
-                }
-                if ($Names.Count -gt $i) {
-                    $AddressObject | Add-Member -MemberType NoteProperty -Name "Name" -Value (Remove-Diacritics $Names[$i])
-                }
-                Write-Verbose "Added Name $($AddressObject.Name) to AddressObject"
-                $AllAddresses += $AddressObject
+            $AddressObject = [pscustomObject]@{
+                "email" = (Remove-Diacritics $AddressValue)
             }
+            if ($Names.Count -gt $i) {
+                $AddressObject | Add-Member -MemberType NoteProperty -Name "Name" -Value (Remove-Diacritics $Names[$i])
+            }
+            Write-Verbose "Added Name $($AddressObject.Name) to AddressObject"
+            $AllAddresses += $AddressObject
+            # }
             $i++
         }
         $AllAddresses
@@ -191,6 +195,9 @@ Function Send-PSSendGridMail {
         [string[]]$AttachmentID
 
     )
+    # Collect initial variables
+    $StartVariables = (Get-Variable).Name
+
     Write-Verbose "Starting Function Send-PSSendGridMail"
     # Set body as HTML or as text
     if (-not[string]::IsNullOrEmpty($BodyAsHTML)) {
@@ -261,6 +268,9 @@ Function Send-PSSendGridMail {
     $CCAddresses = New-AddressArray -Addresses $CCAddress -Names $CCName
     Write-Verbose "Adding bccAddress array if needed"
     $BCCAddresses = New-AddressArray -Addresses $BCCAddress -Names $BCCName
+
+    Write-Verbose "Creating SendGrid object"
+
 
     # Create a body to send to the API
 
@@ -338,5 +348,8 @@ Function Send-PSSendGridMail {
             "Send email")) {
         Invoke-RestMethod @Parameters
     }
+    #Remove the variables that were added by the function
+    $NewVariables = Get-Variable | Where-Object { $StartVariables -notcontains $_.Name }
+    Clear-Variable $NewVariables.Name -ErrorAction SilentlyContinue
     Write-Verbose "API has been called, function is done"
 }
