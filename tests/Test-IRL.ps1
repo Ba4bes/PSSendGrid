@@ -8,7 +8,7 @@ foreach ($parameter in $parameteroptions) {
         FromAddress = $Parameter.FromAddress
         ToAddress   = ($Parameter.ToAddress -split ',')
         Subject     = $parameter.Subject
-        Token       = "TOKENHERE"
+        Token       = "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"
         FromName    = $parameter.FromName
         ToName      = $parameter.ToName
     }
