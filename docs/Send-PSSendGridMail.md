@@ -224,6 +224,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ApiEndpoint
+The API endpoint to use for sending the email. By default, it uses the Global endpoint `https://api.sendgrid.com/v3/mail/send`. If you need to use the EU endpoint, you can override this parameter with `https://api.eu.sendgrid.com/v3/mail/send`.
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 12
+Default value: https://api.sendgrid.com/v3/mail/send
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -WhatIf
 Shows what would happen if the cmdlet runs. The cmdlet is not run.
 

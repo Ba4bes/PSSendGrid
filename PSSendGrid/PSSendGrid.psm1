@@ -191,8 +191,9 @@ Function Send-PSSendGridMail {
         [ValidateSet('attachment', 'inline')]
         [string]$AttachmentDisposition = "attachment",
         [parameter()]
-        [string[]]$AttachmentID
-
+        [string[]]$AttachmentID,
+        [parameter(Mandatory = $False)]
+        [string[]]$ApiEndpoint = "https://api.sendgrid.com/v3/mail/send"
     )
     # Collect initial variables
     $StartVariables = (Get-Variable).Name
@@ -336,7 +337,7 @@ Function Send-PSSendGridMail {
     #send the mail through Sendgrid
     $Parameters = @{
         Method      = "POST"
-        Uri         = "https://api.sendgrid.com/v3/mail/send"
+        Uri         = $ApiEndpoint
         Headers     = $Header
         ContentType = "application/json"
         Body        = $BodyJson
