@@ -184,6 +184,8 @@ Function Send-PSSendGridMail {
         [string]$BodyAsHTML,
         [parameter(Mandatory = $True)]
         [string]$Token,
+        [parameter(Mandatory = $False)]
+        [string[]]$ApiEndpoint = "https://api.sendgrid.com/v3/mail/send",
         [parameter()]
         [ValidateScript( { Test-Path $_ })]
         [string[]]$AttachmentPath,
@@ -191,9 +193,8 @@ Function Send-PSSendGridMail {
         [ValidateSet('attachment', 'inline')]
         [string]$AttachmentDisposition = "attachment",
         [parameter()]
-        [string[]]$AttachmentID,
-        [parameter(Mandatory = $False)]
-        [string[]]$ApiEndpoint = "https://api.sendgrid.com/v3/mail/send"
+        [string[]]$AttachmentID
+
     )
     # Collect initial variables
     $StartVariables = (Get-Variable).Name
