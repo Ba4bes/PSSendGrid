@@ -90,6 +90,10 @@ Function Send-PSSendGridMail {
     Body of the email when using HTML
     .PARAMETER Token
     SendGrid token for the API
+    .Parameter ApiEndpoint
+    The API endpoint to use for sending the email.
+    By default, it uses the Global endpoint https://api.sendgrid.com/v3/mail/send.
+    If you need to use the EU endpoint, you can override this parameter with `https://api.eu.sendgrid.com/v3/mail/send`.
     .PARAMETER AttachmentPath
     Path to file(s) that needs to be attached.
     This can be a single string or an array of strings
@@ -185,7 +189,7 @@ Function Send-PSSendGridMail {
         [parameter(Mandatory = $True)]
         [string]$Token,
         [parameter(Mandatory = $False)]
-        [string[]]$ApiEndpoint = "https://api.sendgrid.com/v3/mail/send",
+        [uri]$ApiEndpoint = "https://api.sendgrid.com/v3/mail/send",
         [parameter()]
         [ValidateScript( { Test-Path $_ })]
         [string[]]$AttachmentPath,
