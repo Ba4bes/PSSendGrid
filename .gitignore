@@ -1,4 +1,5 @@
 # ignore files that are used for tests and contain emailaddresses
 *testparameters.csv
 *.tests.ps1
-Test-IRL.ps1
+tests/
+publish.ps1

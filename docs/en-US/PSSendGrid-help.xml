@@ -268,7 +268,19 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="none">
+        <maml:name>ApiEndpoint</maml:name>
+        <maml:description>
+          <maml:para>The API endpoint to use for sending the email. By default, it uses the Global endpoint `https://api.sendgrid.com/v3/mail/send`. If you need to use the EU endpoint, you can override this parameter with `https://api.eu.sendgrid.com/v3/mail/send`.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>https://api.sendgrid.com/v3/mail/send</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="10" aliases="none">
         <maml:name>AttachmentPath</maml:name>
         <maml:description>
           <maml:para>Path to file that needs to be attached</maml:para>
@@ -280,7 +292,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="10" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="none">
         <maml:name>AttachmentDisposition</maml:name>
         <maml:description>
           <maml:para>attachment or Inline. Use inline to add image to HTML body</maml:para>
@@ -292,7 +304,7 @@
         </dev:type>
         <dev:defaultValue>Attachment</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="12" aliases="none">
         <maml:name>AttachmentID</maml:name>
         <maml:description>
           <maml:para>AttachmentID for inline attachment, to refer to from the HTML</maml:para>
